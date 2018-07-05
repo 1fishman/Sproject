@@ -1,0 +1,31 @@
+import requests
+import logging
+import time
+def hrblogin(svpn_name,svpn_password):
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:61.0) Gecko/20100101 Firefox/61.0'
+    }
+    #'referer': 'https://ssl.hrbeu.edu.cn/por/service.csp'
+    # 伪装一下
+    session = requests.session()
+    # 用session来处理cookie什么鬼的
+    session.get('https://ssl.hrbeu.edu.cn/por/login_psw.csp', verify=False, headers=headers)
+    # 第一次登陆处理一下cookie什么的
+    logging.captureWarnings(True)
+    # HTTPS里ssl证书就靠这个了FALSE了
+    data = {
+        'svpn_name':svpn_name,
+        'svpn_password':svpn_password,
+        'svpn_rand_code': ''
+    }
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:61.0) Gecko/20100101 Firefox/61.0',
+        'referer': 'https://ssl.hrbeu.edu.cn/por/service.csp'
+    }
+    session.post('https://ssl.hrbeu.edu.cn/por/login_psw.csp',data=data,verify=False,headers=headers)
+    # 正式登陆
+    url='https://ssl.hrbeu.edu.cn/web/1/http/0/cas.hrbeu.edu.cn/cas/login?service=http://edusys.hrbeu.edu.cn/jsxsd/index.jsp'
+    r=session.get(url)
+    return r
+r= hrblogin('2016201110','liu123654789')
+print(r.url,r.text)
