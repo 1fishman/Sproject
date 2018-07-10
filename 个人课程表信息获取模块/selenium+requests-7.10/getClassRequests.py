@@ -52,16 +52,17 @@ def classLoginRequests(chrome,username,password):
         'submit': '%E7%99%BB+%E5%BD%95'
     }
     s.post(url, data=data, headers=header, verify=False, cookies=jar)
-    line= s.get( headers=header, verify=False, cookies=jar,url='https://ssl.hrbeu.edu.cn/web/1/http/1/edusys.hrbeu.edu.cn/jsxsd/xskb/xskb_list.do?Ves632DSdyV=NEW_XSD_PYGL')
-    return line.text
+    return s, jar
 #返回了个人的课程表的网页
-def getClassRequests(htmlText,username,userpassword,dbhelp):
+def getClassRequests(s,jar,username,userpassword,dbhelp):
     dbhelp.createTable('class' + username)
     if (dbhelp.testUID(username)):  # 如果id存在且到这一步说明用户修改密码了
         dbhelp.updatePassword(username,userpassword)  # 修改密码
     else:
         dbhelp.insertStudent(username, userpassword)  # 插入一条新的id 密码
-    soup=BeautifulSoup(htmlText,'lxml')
+    line = s.get(verify=False, cookies=jar,
+                 url='https://ssl.hrbeu.edu.cn/web/1/http/1/edusys.hrbeu.edu.cn/jsxsd/xskb/xskb_list.do?Ves632DSdyV=NEW_XSD_PYGL')
+    soup=BeautifulSoup(line.text,'lxml')
     results=[]
     for div in soup.find(id='kbtable').find_all('div',class_='kbcontent'):
         CDay = re.findall(r'>([\w[\]\,\(\)\#]+\-{0,1}[\w[\]\,\(\)\#\-]+)',str(div))
@@ -77,8 +78,8 @@ def univeralGetClass(userName,userPassword,dbName):
     if(dbhelp.testUser(userName,userPassword)):
         if (dbhelp.tableExist('class' + userName)):
             return dbhelp.getTableContent('class' + userName)
-    chrome = classLoginRequests(NatLogin('2016201110', 'liu123654789', True), userName, userPassword)
-    return getClassRequests(chrome,userName,userPassword,dbhelp)
+    s,jar= classLoginRequests(NatLogin('2016201110', 'liu123654789', True), userName, userPassword)
+    return getClassRequests(s,jar,userName,userPassword,dbhelp)
 #先向数据库查询 如果存在就返回 不存在就登录并爬取数据存储在数据库里
 #可以传递getClassRequests给getClass
 classes= univeralGetClass('2016201110','liu536842','myclass')
