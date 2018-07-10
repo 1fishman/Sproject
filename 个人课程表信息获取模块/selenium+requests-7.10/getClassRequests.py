@@ -1,12 +1,12 @@
-import json
 from requests.cookies import RequestsCookieJar
 import requests
-import re
 from bs4 import BeautifulSoup
+import re
 from selenium import webdriver
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.by import By
+import MySqlHelp
 def NatLogin(userName,userPassworld,bool):
     if(bool==True):#为true就不弹出Chrome
         chrome_options = webdriver.ChromeOptions()
@@ -55,20 +55,33 @@ def classLoginRequests(chrome,username,password):
     line= s.get( headers=header, verify=False, cookies=jar,url='https://ssl.hrbeu.edu.cn/web/1/http/1/edusys.hrbeu.edu.cn/jsxsd/xskb/xskb_list.do?Ves632DSdyV=NEW_XSD_PYGL')
     return line.text
 #返回了个人的课程表的网页
-def getClassRequests(htmlText):
+def getClassRequests(htmlText,username,userpassword,dbhelp):
+    dbhelp.createTable('class' + username)
+    if (dbhelp.testUID(username)):  # 如果id存在且到这一步说明用户修改密码了
+        dbhelp.updatePassword(username,userpassword)  # 修改密码
+    else:
+        dbhelp.insertStudent(username, userpassword)  # 插入一条新的id 密码
     soup=BeautifulSoup(htmlText,'lxml')
     results=[]
     for div in soup.find(id='kbtable').find_all('div',class_='kbcontent'):
-        CDay = re.search(r'>\w+',str(div))
-        if CDay:
-            result = []
+        CDay = re.findall(r'>([\w[\]\,\(\)\#]+\-{0,1}[\w[\]\,\(\)\#\-]+)',str(div))
+        for i in range(0,len(CDay),5):
+            result=[]
+            result=CDay[i:i+5]
             result.append(div['id'][-3:-2])
-            result.append(CDay[0][1:])
-            for font in div.find_all('font'):
-                result.append(font.text)
             results.append(result)
+            dbhelp.insertInto('class' + username, result)  # 插入到数据库里
     return results
-a=getClassRequests(classLoginRequests(NatLogin('2016201110','liu123654789',True),'2016201110','liu536842'))
-for i in a:
-    print(i)
+def univeralGetClass(userName,userPassword,dbName):
+    dbhelp = MySqlHelp.MySqlHelp(dbName)
+    if(dbhelp.testUser(userName,userPassword)):
+        if (dbhelp.tableExist('class' + userName)):
+            return dbhelp.getTableContent('class' + userName)
+    chrome = classLoginRequests(NatLogin('2016201110', 'liu123654789', True), userName, userPassword)
+    return getClassRequests(chrome,userName,userPassword,dbhelp)
+#先向数据库查询 如果存在就返回 不存在就登录并爬取数据存储在数据库里
+#可以传递getClassRequests给getClass
+classes= univeralGetClass('2016201110','liu536842','myclass')
+for c in classes:
+    print(c)
 #测试用
