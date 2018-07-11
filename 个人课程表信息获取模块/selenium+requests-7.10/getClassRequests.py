@@ -125,9 +125,10 @@ scores=univeralGetData('2016201110','liu536842','myclass','score')
 for s in scores:
     print(s)
 #测试score用
-all,results =MySqlHelp.MySqlHelp('myclass').getOptionalScore('2016201110','score')
-
+all,results =MySqlHelp.MySqlHelp('myclass').getOptionalScore('2016201114','score')
 for a in all:
     print(a)
 for a,v in results.items():
     print(a,v)
+result=MySqlHelp.MySqlHelp('myclass').getScore('2016201114','score')
+print(result)

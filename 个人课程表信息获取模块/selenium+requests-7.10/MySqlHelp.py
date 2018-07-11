@@ -152,6 +152,44 @@ PRIMARY KEY (课程名称, 课程编号, 开课学期,考试性质) USING BTREE\
         results['通识教育选修课'] = he
         return a,results
     #计算选修学分并返回自己的各个模块的学分
+    def getScore(self,id,type):
+        cursor = self.db.cursor()
+        cursor1= self.db.cursor()
+        cursor.execute('select 学分,成绩,开课学期 from '+type+id+' WHERE 课程属性 ="必修" and 考试性质="正常考试" ORDER BY 开课学期')
+        cursor1.execute('SELECT SUM(学分),开课学期 FROM '+type+id+' WHERE 课程属性 ="必修" and 考试性质="正常考试" GROUP BY 开课学期')
+        result=cursor.fetchall()
+        newdict = {}
+        for a in cursor1.fetchall():
+            newdict[a[1]] = a[0]
+        def transfe(i):
+            if i == '优秀':
+                return 95
+            elif i == '良好':
+                return 85
+            elif i == '中等':
+                return 75
+            elif i == '及格':
+                return 65
+            elif i == '不及格':
+                return 30
+            else:
+                return float(i)
+
+        sum = 0
+        times = []
+        resultsMap = {}
+        times.append(result[0][2])
+        for r in result:
+            if r[2] not in times:
+                times.append(r[2])
+                resultsMap[a] = sum / newdict[a]
+                sum = 0
+            else:
+                a = r[2]
+                sum += float(r[0]) * transfe(r[1])
+        else:
+            resultsMap[a] = sum / newdict[a]
+        return resultsMap
     def __del__(self):
         self.db.close()
     #关闭连接
