@@ -130,6 +130,28 @@ PRIMARY KEY (课程名称, 课程编号, 开课学期,考试性质) USING BTREE\
         self.db.commit()
         print(id,password,"插入成功")
     #插入一个新的id 密码
+    def getOptionalScore(self,id,type):
+        cursor = self.db.cursor()
+        cursor.execute('select sum(学分),课程性质 from '
+                       +type+id+' where 课程属性 = "公选" and 成绩 not in ("不及格","---") or 课程属性 = "任选" and 成绩 not in ("不及格","---")GROUP BY 课程性质 ')
+        a=cursor.fetchall()
+        results = {}
+        he = 0
+        for i in a:
+            if i[1] == '专业拓展':
+                results['专业拓展'] = i[0]
+            elif i[1] == '创新创业':
+                results['创新创业'] = i[0]
+            elif i[1] == '专业选修课程':
+                results['专业选修课程'] = i[0]
+            elif i[1] == '艺术修养与审美':
+                results['D模块'] = i[0]
+                he += i[0]
+            else:
+                he += i[0]
+        results['通识教育选修课'] = he
+        return a,results
+    #计算选修学分并返回自己的各个模块的学分
     def __del__(self):
         self.db.close()
     #关闭连接

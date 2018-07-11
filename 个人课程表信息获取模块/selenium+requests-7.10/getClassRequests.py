@@ -26,7 +26,7 @@ def classLoginRequests(chrome,username,password):
     chrome.get(
         'https://ssl.hrbeu.edu.cn/web/1/http/0/cas.hrbeu.edu.cn/cas/login?service=http://edusys.hrbeu.edu.cn/jsxsd/index.jsp')
     try:
-        WebDriverWait(chrome, 3).until(EC.presence_of_element_located((By.XPATH, '//*[@id="username"]')))
+        #WebDriverWait(chrome, 3).until(EC.presence_of_element_located((By.XPATH, '//*[@id="username"]')))
         cookies = chrome.get_cookies()
         jar = RequestsCookieJar()
         for cookie in cookies:
@@ -95,7 +95,7 @@ def getDetailClass1(s,jar,userName,dbhelp):
     for i in range(2, len(trs)):
         result = []
         for td in trs[i].find_all('td'):
-            a = re.findall(r'>([\w\-]+)', str(td))
+            a = re.findall(r'>([\w\-\.]+)', str(td))
             if a:
                 result.append(a[0])
             else:
@@ -117,11 +117,17 @@ def univeralGetData(userName,userPassword,dbName,type):
         return getClassRequests(s, jar, userName, userPassword, dbhelp)
 #先向数据库查询 如果存在就返回 不存在就登录并爬取数据存储在数据库里
 #可以传递getClassRequests给getClass
-# classes= univeralGetData('2016201110','liu536842','myclass','class')
-# for c in classes:
-#     print(c)
-# #测试class用
-scores=univeralGetData('2016201114','12106436','myclass','score')
+classes= univeralGetData('2016201110','liu536842','myclass','class')
+for c in classes:
+    print(c)
+#测试class用
+scores=univeralGetData('2016201110','liu536842','myclass','score')
 for s in scores:
     print(s)
 #测试score用
+all,results =MySqlHelp.MySqlHelp('myclass').getOptionalScore('2016201110','score')
+
+for a in all:
+    print(a)
+for a,v in results.items():
+    print(a,v)
