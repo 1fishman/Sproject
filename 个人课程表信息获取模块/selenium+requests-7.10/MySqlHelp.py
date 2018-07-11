@@ -46,10 +46,13 @@ class MySqlHelp:
         for result in results:
             print(result[0])
     #展示所有的列
-    def insertInto(self,theTable,myValues):
+    def insertInto(self,theTable,myValues,type):
         cursor = self.db.cursor()
         try:
-            results = "(1,"
+            if type=='class':
+                results = "(1,"
+            if type=='score':
+                results="("
             for value in myValues:
                 results = results + "'" + value + "',"
             results = results[:-1]
@@ -75,9 +78,10 @@ class MySqlHelp:
         except Exception as e:
             print(e)
     #输出某表的全部内容
-    def createTable(self,tableName):
+    def createTable(self,tableName,type):
         cursor = self.db.cursor()
-        sql = "CREATE TABLE if not exists "+tableName+"(Cid int(4) NULL DEFAULT NULL,\
+        if type=='class':
+            sql = "CREATE TABLE if not exists "+tableName+"(Cid int(4) NULL DEFAULT NULL,\
 Cname varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,\
 Cteach varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,\
 Clast varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,\
@@ -85,6 +89,21 @@ Ctime varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,\
 Cadr varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,\
 Cday varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,\
 PRIMARY KEY (Cname,Ctime,Cday) USING BTREE) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic"
+        elif type=='score':
+            sql = "CREATE TABLE if not exists " + tableName + "(开课学期 varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,\
+课程编号 varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,\
+课程名称 varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,\
+成绩 varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,\
+学分 varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,\
+总学时 varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,\
+考核方式 varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,\
+考试性质 varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,\
+课程属性 varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,\
+课程性质 varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,\
+通识教育选修课程类别 varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,\
+成绩标记 varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,\
+PRIMARY KEY (课程名称, 课程编号, 开课学期,考试性质) USING BTREE\
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;"
         cursor.execute(sql)
         self.db.commit()
         print(tableName+'建表成功')

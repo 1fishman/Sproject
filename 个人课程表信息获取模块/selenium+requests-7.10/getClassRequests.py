@@ -7,6 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.by import By
 import MySqlHelp
+import logging
 def NatLogin(userName,userPassworld,bool):
     if(bool==True):#为true就不弹出Chrome
         chrome_options = webdriver.ChromeOptions()
@@ -55,7 +56,7 @@ def classLoginRequests(chrome,username,password):
     return s, jar
 #返回了个人的课程表的网页
 def getClassRequests(s,jar,username,userpassword,dbhelp):
-    dbhelp.createTable('class' + username)
+    dbhelp.createTable('class' + username,'class')
     if (dbhelp.testUID(username)):  # 如果id存在且到这一步说明用户修改密码了
         dbhelp.updatePassword(username,userpassword)  # 修改密码
     else:
@@ -71,18 +72,56 @@ def getClassRequests(s,jar,username,userpassword,dbhelp):
             result=CDay[i:i+5]
             result.append(div['id'][-3:-2])
             results.append(result)
-            dbhelp.insertInto('class' + username, result)  # 插入到数据库里
+            dbhelp.insertInto('class' + username, result,'class')  # 插入到数据库里
     return results
-def univeralGetClass(userName,userPassword,dbName):
+#获得class
+def getDetailClass1(s,jar,userName,dbhelp):
+    url = 'https://ssl.hrbeu.edu.cn/web/1/http/1/edusys.hrbeu.edu.cn/jsxsd/kscj/cjcx_list'
+    header = {
+        'post': 'https://ssl.hrbeu.edu.cn/web/1/http/1/edusys.hrbeu.edu.cn/jsxsd/kscj/cjcx_list',
+        'Host': 'ssl.hrbeu.edu.cn',
+        'Referer': 'https://ssl.hrbeu.edu.cn/web/1/http/1/edusys.hrbeu.edu.cn/jsxsd/kscj/cjcx_query.do',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:61.0) Gecko/20100101 Firefox/61.0'
+    }
+    data = {
+        'kksj': '', 'kcxz': '', 'kcmc': '', 'xsfs': 'all'
+    }
+    logging.captureWarnings(True)
+    lines = s.post(url, data=data, headers=header, verify=False, cookies=jar)
+    dbhelp.createTable('score' + userName, 'score')
+    soup = BeautifulSoup(lines.text,'lxml')
+    trs = soup.find_all("tr")
+    results = []
+    for i in range(2, len(trs)):
+        result = []
+        for td in trs[i].find_all('td'):
+            a = re.findall(r'>([\w\-]+)', str(td))
+            if a:
+                result.append(a[0])
+            else:
+                result.append(' ')
+        newResult = result[1:]
+        dbhelp.insertInto("score"+userName,newResult,'score')
+        results.append(newResult)
+    return results
+#获得score
+def univeralGetData(userName,userPassword,dbName,type):
     dbhelp = MySqlHelp.MySqlHelp(dbName)
     if(dbhelp.testUser(userName,userPassword)):
-        if (dbhelp.tableExist('class' + userName)):
-            return dbhelp.getTableContent('class' + userName)
-    s,jar= classLoginRequests(NatLogin('2016201110', 'liu123654789', True), userName, userPassword)
-    return getClassRequests(s,jar,userName,userPassword,dbhelp)
+        if (dbhelp.tableExist(type + userName)):
+            return dbhelp.getTableContent(type + userName)
+    s,jar = classLoginRequests(NatLogin('2016201110', 'liu123654789', True), userName, userPassword)
+    if type=='score':
+        return getDetailClass1(s,jar,userName,dbhelp)
+    elif type=='class':
+        return getClassRequests(s, jar, userName, userPassword, dbhelp)
 #先向数据库查询 如果存在就返回 不存在就登录并爬取数据存储在数据库里
 #可以传递getClassRequests给getClass
-classes= univeralGetClass('2016201110','liu536842','myclass')
-for c in classes:
-    print(c)
-#测试用
+# classes= univeralGetData('2016201110','liu536842','myclass','class')
+# for c in classes:
+#     print(c)
+# #测试class用
+scores=univeralGetData('2016201114','12106436','myclass','score')
+for s in scores:
+    print(s)
+#测试score用
