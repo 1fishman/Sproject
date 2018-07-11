@@ -155,8 +155,8 @@ PRIMARY KEY (课程名称, 课程编号, 开课学期,考试性质) USING BTREE\
     def getScore(self,id,type):
         cursor = self.db.cursor()
         cursor1= self.db.cursor()
-        cursor.execute('select 学分,成绩,开课学期 from '+type+id+' WHERE 课程属性 ="必修" and 考试性质="正常考试" ORDER BY 开课学期')
-        cursor1.execute('SELECT SUM(学分),开课学期 FROM '+type+id+' WHERE 课程属性 ="必修" and 考试性质="正常考试" GROUP BY 开课学期')
+        cursor.execute('select 学分,成绩,开课学期 from '+type+id+' WHERE 考试性质="正常考试" and 成绩标记 <> "缺考" ORDER BY 开课学期')
+        cursor1.execute('SELECT SUM(学分),开课学期 FROM '+type+id+' WHERE 考试性质="正常考试" and 成绩标记 <> "缺考" GROUP BY 开课学期')
         result=cursor.fetchall()
         newdict = {}
         for a in cursor1.fetchall():
@@ -174,7 +174,6 @@ PRIMARY KEY (课程名称, 课程编号, 开课学期,考试性质) USING BTREE\
                 return 30
             else:
                 return float(i)
-
         sum = 0
         times = []
         resultsMap = {}
@@ -182,12 +181,14 @@ PRIMARY KEY (课程名称, 课程编号, 开课学期,考试性质) USING BTREE\
         for r in result:
             if r[2] not in times:
                 times.append(r[2])
+                sum+=float(r[0]) * transfe(r[1])
                 resultsMap[a] = sum / newdict[a]
                 sum = 0
             else:
                 a = r[2]
                 sum += float(r[0]) * transfe(r[1])
         else:
+            print(sum, a)
             resultsMap[a] = sum / newdict[a]
         return resultsMap
     def __del__(self):
