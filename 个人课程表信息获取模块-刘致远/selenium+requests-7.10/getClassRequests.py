@@ -53,9 +53,10 @@ def classLoginRequests(chrome,username,password):
         'submit': '%E7%99%BB+%E5%BD%95'
     }
     s.post(url, data=data, headers=header, verify=False, cookies=jar)
-    return s, jar
+    return jar
 #返回了个人的课程表的网页
-def getClassRequests(s,jar,username,userpassword,dbhelp):
+def getClassRequests(jar,username,userpassword,dbhelp):
+    s=requests.session()
     dbhelp.createTable('class' + username,'class')
     if (dbhelp.testUID(username)):  # 如果id存在且到这一步说明用户修改密码了
         dbhelp.updatePassword(username,userpassword)  # 修改密码
@@ -75,7 +76,8 @@ def getClassRequests(s,jar,username,userpassword,dbhelp):
             dbhelp.insertInto('class' + username, result,'class')  # 插入到数据库里
     return results
 #获得class
-def getDetailClass1(s,jar,userName,dbhelp):
+def getDetailClass1(jar,userName,dbhelp):
+    s = requests.session()
     url = 'https://ssl.hrbeu.edu.cn/web/1/http/1/edusys.hrbeu.edu.cn/jsxsd/kscj/cjcx_list'
     header = {
         'post': 'https://ssl.hrbeu.edu.cn/web/1/http/1/edusys.hrbeu.edu.cn/jsxsd/kscj/cjcx_list',
@@ -95,7 +97,7 @@ def getDetailClass1(s,jar,userName,dbhelp):
     for i in range(2, len(trs)):
         result = []
         for td in trs[i].find_all('td'):
-            a = re.findall(r'>([\w\-\.]+)', str(td))
+            a = re.findall(r'>([\w\-\.（）]+)', str(td))
             if a:
                 result.append(a[0])
             else:
@@ -110,25 +112,27 @@ def univeralGetData(userName,userPassword,dbName,type):
     if(dbhelp.testUser(userName,userPassword)):
         if (dbhelp.tableExist(type + userName)):
             return dbhelp.getTableContent(type + userName)
-    s,jar = classLoginRequests(NatLogin('2016201110', 'liu123654789', True), userName, userPassword)
+    jar = classLoginRequests(NatLogin('2016201110', 'liu123654789', True), userName, userPassword)
     if type=='score':
-        return getDetailClass1(s,jar,userName,dbhelp)
+        return getDetailClass1(jar,userName,dbhelp)
     elif type=='class':
-        return getClassRequests(s, jar, userName, userPassword, dbhelp)
-#先向数据库查询 如果存在就返回 不存在就登录并爬取数据存储在数据库里
-#可以传递getClassRequests给getClass
-classes= univeralGetData('2016201110','liu536842','myclass','class')
-for c in classes:
-    print(c)
-#测试class用
-scores=univeralGetData('2016201110','liu536842','myclass','score')
-for s in scores:
-    print(s)
-#测试score用
-all,results =MySqlHelp.MySqlHelp('myclass').getOptionalScore('2016201114','score')
-for a in all:
-    print(a)
-for a,v in results.items():
-    print(a,v)
-result=MySqlHelp.MySqlHelp('myclass').getScore('2016201114','score')
-print(result)
+        return getClassRequests(jar, userName, userPassword, dbhelp)
+# 先向数据库查询 如果存在就返回 不存在就登录并爬取数据存储在数据库里
+# 可以传递getClassRequests给getClass
+# classes= univeralGetData('2016201110','liu536842','myclass','class')
+# for c in classes:
+#     print(c)
+# #测试class用
+# scores=univeralGetData('2016201110','liu536842','myclass','score')
+# for s in scores:
+#     print(s)
+# #测试score用
+# all,results =MySqlHelp.MySqlHelp('myclass').getOptionalScore('2016201114','score')
+# for a in all:
+#     print(a)
+# for a,v in results.items():
+#     print(a,v)
+#students=MySqlHelp.MySqlHelp('myclass').getAllStudent()
+# for student in students:
+#     univeralGetData(student[0], student[1], 'myclass', 'class')
+#     univeralGetData(student[0], student[1], 'myclass', 'score')
