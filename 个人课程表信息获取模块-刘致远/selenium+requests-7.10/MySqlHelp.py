@@ -192,6 +192,10 @@ PRIMARY KEY (课程名称, 课程编号, 开课学期,考试性质) USING BTREE\
         else:
             resultsMap[a] = sum / newdict[a]
         return resultsMap
+    def getAllStudent(self):
+        cursor = self.db.cursor()
+        cursor.execute('select * from student')
+        return cursor.fetchall()
     def __del__(self):
         self.db.close()
     #关闭连接
