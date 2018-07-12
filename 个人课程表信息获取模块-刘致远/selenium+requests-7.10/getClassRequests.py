@@ -97,7 +97,7 @@ def univeralGetData(userName,userPassword,dbName,type):
     if(dbhelp.testUser(userName,userPassword)):
         if (dbhelp.tableExist(type + userName)):
             return dbhelp.getTableContent(type + userName)
-    jar =getCookies.NatLogin('2016201110', 'liu123654789', True)
+    jar =getCookies.getCookiesFromTxt()
     if jar==[]:
         return False
     if type=='score':
@@ -105,11 +105,12 @@ def univeralGetData(userName,userPassword,dbName,type):
     elif type=='class':
         return getClassRequests(jar, userName, userPassword, dbhelp)
 # 先向数据库查询 如果存在就返回 不存在就登录并爬取数据存储在数据库里
-# 可以传递getClassRequests给getClass
-classes= univeralGetData('2016201110','liu536842','myclass','class')
-for c in classes:
-    print(c)
-# #测试class用
+# getCookies.NatLogin('2016201110', 'liu123654789', True)
+#测试并存储cookis用
+# classes= univeralGetData('2016201110','liu536842','myclass','class')
+# for c in classes:
+#     print(c)
+#测试class用
 # scores=univeralGetData('2016201110','liu536842','myclass','score')
 # for s in scores:
 #     print(s)
@@ -119,7 +120,3 @@ for c in classes:
 #     print(a)
 # for a,v in results.items():
 #     print(a,v)
-#students=MySqlHelp.MySqlHelp('myclass').getAllStudent()
-# for student in students:
-#     univeralGetData(student[0], student[1], 'myclass', 'class')
-#     univeralGetData(student[0], student[1], 'myclass', 'score')

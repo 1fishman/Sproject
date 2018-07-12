@@ -19,21 +19,15 @@ def NatLogin(userName,userPassworld,bool):
     try:
         # WebDriverWait(chrome, 3).until(EC.presence_of_element_located((By.XPATH, '//*[@id="username"]')))
         cookies = chrome.get_cookies()
-        jar = RequestsCookieJar()
-        for cookie in cookies:
-            jar.set(cookie['name'], cookie['value'])
+        with open("cookies.txt", "w") as fp:
+            json.dump(cookies, fp)
+        print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'cookies 存储成功')
+    # 存储cookies
     except:
         print('教务处连接失败')
-        return []
-    return jar
+        return False
+    return True
 #外网进入内网
-def writeCookies(jar):
-    with open("cookies.txt", "r") as fp:
-        cookies = json.load(fp)
-        for cookie in cookies:
-            jar.set(cookie['name'], cookie['value'])
-    print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),'cookies 存储成功')
-#存储cookies
 def getCookiesFromTxt():
     jar = RequestsCookieJar()
     with open("cookies.txt", "r") as fp:
