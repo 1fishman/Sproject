@@ -158,9 +158,11 @@ PRIMARY KEY (课程名称, 课程编号, 开课学期,考试性质) USING BTREE\
         cursor.execute('select 学分,成绩,开课学期 from '+type+id+' WHERE 考试性质="正常考试" and 成绩标记 <> "缺考" ORDER BY 开课学期')
         cursor1.execute('SELECT SUM(学分),开课学期 FROM '+type+id+' WHERE 考试性质="正常考试" and 成绩标记 <> "缺考" GROUP BY 开课学期')
         result=cursor.fetchall()
+        print(result)
         newdict = {}
         for a in cursor1.fetchall():
             newdict[a[1]] = a[0]
+        print(newdict)
         def transfe(i):
             if i == '优秀':
                 return 95
@@ -181,14 +183,13 @@ PRIMARY KEY (课程名称, 课程编号, 开课学期,考试性质) USING BTREE\
         for r in result:
             if r[2] not in times:
                 times.append(r[2])
-                sum+=float(r[0]) * transfe(r[1])
                 resultsMap[a] = sum / newdict[a]
                 sum = 0
+                sum += float(r[0]) * transfe(r[1])
             else:
                 a = r[2]
                 sum += float(r[0]) * transfe(r[1])
         else:
-            print(sum, a)
             resultsMap[a] = sum / newdict[a]
         return resultsMap
     def __del__(self):
