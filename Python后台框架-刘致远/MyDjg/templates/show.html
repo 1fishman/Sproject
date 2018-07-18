@@ -1,0 +1,231 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome {{ userid }}</title>
+    <style>
+        li {
+    display: list-item;
+    text-align: -webkit-match-parent;
+}
+        body {
+    background: #36383F;
+}
+body {
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: #191A1D;
+}
+body {
+    color: white;
+}
+html {
+    font-family: "Lato", "Lucida Grande", "Lucida Sans Unicode", Tahoma, Sans-Serif;
+    line-height: 1.5;
+    font-size: 15px;
+    font-weight: 400;
+}
+html, body {
+    height: 100%;
+    -webkit-overflow-scrolling: touch;
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    display: block;
+    margin: 8px;
+}
+        .h1 {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-family: "Telefon Black", Sans-Serif;
+    line-height: 1.1;
+    font-size: 3rem;
+}
+        .weekly-wrap {
+    margin: 0 auto 1rem;
+    padding: 0 4rem 3rem;
+}
+        .weekly-items {
+    background: #202125;
+            width:60%;
+    border-radius: 3px;
+    padding: 30px;
+    position: relative;}
+        .weekly-item-description {
+    color: rgba(255,255,255,0.8);
+    letter-spacing: 0.2px;
+    font-size: 14px;
+    margin-bottom: 0;
+   }
+        .weekly-item-tile {
+    display: inline-block;
+    margin-bottom: 30px;
+    background: #2c2d33;
+    padding: 20px;}
+        a {
+    text-decoration: none;
+    color: white;}
+
+        .weekly-sidebar {
+    width: 35%;
+    padding-right: 20px;}
+        .spark-grid {
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;}
+   .weekly-sidebar-header {
+    font-family: "Lato", "Lucida Grande", "Lucida Sans Unicode", Tahoma, Sans-Serif;
+    color: rgba(255,255,255,0.7);
+    text-transform: uppercase;
+    font-size: 18px;
+    margin-top: 25px;
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
+}
+.card__item {
+    margin: 0 0 0.75rem;
+    padding: 2.25rem 1.5rem;
+    border-top: 4px solid #404040;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    cursor: pointer;
+    -webkit-transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+        ul {
+    list-style-type: none;
+}
+        .card__list {
+    padding: 0.75rem;
+}
+        .card__item--purple {
+    border-top-color: #3E5EB3;
+}
+        .card__info {
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+}
+        .card__info .info-player {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+.card__item--purple p.info-player__num {
+    background: #5171C3;
+    text-shadow: 1px 1px rgba(51, 78, 148, 0.7), 2px 2px rgba(54, 81, 152, 0.715), 3px 3px rgba(56, 84, 156, 0.73), 4px 4px rgba(58, 87, 160, 0.745), 5px 5px rgba(61, 89, 163, 0.76), 6px 6px rgba(62, 91, 166, 0.775), 7px 7px rgba(64, 94, 169, 0.79), 8px 8px rgba(66, 96, 172, 0.805), 9px 9px rgba(68, 97, 174, 0.82), 10px 10px rgba(69, 99, 176, 0.835), 11px 11px rgba(71, 101, 179, 0.85), 12px 12px rgba(72, 102, 181, 0.865), 13px 13px rgba(73, 104, 183, 0.88), 14px 14px rgba(74, 105, 184, 0.895), 15px 15px rgba(75, 106, 186, 0.91), 16px 16px rgba(76, 108, 188, 0.925), 17px 17px rgba(77, 109, 189, 0.94), 18px 18px rgba(78, 110, 191, 0.955), 19px 19px rgba(79, 111, 192, 0.97), 20px 20px rgba(80, 112, 194, 0.985);
+}
+        .card__info .info-player__name {
+    line-height: 1.1;
+    font-size: 20px;
+    margin: 0;
+}
+        .card__info .info-place {
+    margin: 0;
+    font-size: 24px;
+}
+        p.info-player__num {
+    display: block;
+    -webkit-margin-before: 1em;
+    -webkit-margin-after: 1em;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+}
+        .card__info .info-player__num {
+    width: 60px;
+    height: 60px;
+    line-height: 36px;
+    padding: 0.75rem;
+    margin: 0 0.75rem 0 0;
+    text-align: center;
+    background: silver;
+    border-radius: 50%;
+    font-size: 36px;
+    color: white;
+    overflow: hidden;
+    -webkit-transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+        .card__item:hover {
+    background: white;
+            box-shadow: 0 0 40px rgba(41, 205, 238, 0.5);
+            color: #5171C3;
+}
+    </style>
+</head>
+<body>
+<div class="weekly-wrap" id="app">
+<div class="spark-grid">
+    <div class="weekly-sidebar">
+        <div class="weekly-sidebar-header">
+                加权平均分
+        </div>
+        {% for result in resultList %}
+	<ul class="card__list" data-model-name="{{ result.semester }}-{{ result.semester2 }}">
+			<li class="card__item card__item--purple">
+				<div class="card__info">
+					<div class="info-player ">
+						<p class="info-player__num">{{ result.credit }}</p>
+                        <p class="info-player__name">分</p>
+						<p class="info-player__name"><small>  {{ result.semester }}</small><br>第 {{ result.semester2 }} 学期</p>
+					</div>
+					<div class="info-place">共 <sup>{{result.count}}</sup> 门</div>
+				</div>
+			</li>
+    </ul>
+        {% endfor %}
+    </div>
+  <main class="weekly-items">
+        <div class="weekly-items-header">
+          <h1>
+            <span>Score:</span>
+          </h1>
+        </div>
+  <div class="weekly-items-wrap">
+      {% for score in score_list %}
+            <a class="weekly-item-tile class{{ score.semester}}">
+                    <h3 class="weekly-item-title">
+                        {{score.cname}}
+                    </h3>
+                <h4 class="weekly-item-title">
+                        {{score.semester}}
+                    </h4>
+                <h4 class="weekly-item-title">
+                        credit:{{score.credit}}
+                    </h4>
+                <p class="weekly-item-description">
+                    score:{{  score.csore}}
+                </p>
+
+            </a>
+      {% endfor %}
+       </div>
+  </main>
+</div>
+</div>
+<script src="{% static "js/jquery.min.js" %}" ></script>
+<script>
+$(document).ready(function(){
+  $(".card__list").click(function(){
+     var a=$(this).attr('data-model-name');
+     $(".weekly-item-tile").hide();
+     $(".class"+a).show();
+  });
+});
+</script>
+</body>
+</html>
